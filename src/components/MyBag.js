@@ -2,7 +2,7 @@ import { useContext, useMemo } from "react";
 import { Context } from "../App";
 
 const MyBag = () => {
-  const { bagState, setBagState, prodState } = useContext(Context);
+  const { bagState, setBagState, prodState, isCartOpen } = useContext(Context);
   const bagDisplay = useMemo(
     () =>
       bagState
@@ -25,8 +25,8 @@ const MyBag = () => {
       ),
     [bagDisplay]
   );
-  return (
-    <div className="p-4 bg-white rounded shadow-md w-full max-w-sm mx-auto">
+  return isCartOpen ? (
+    <div className="p-4 bg-white w-full max-w-md right-20 fixed top-16" style={{zIndex: 3}}>
       <h2 className="text-lg mb-4">
         <span className="font-semibold">My Bag{bagCount ? "," : ""}</span>{" "}
         {bagCount ? (
@@ -35,13 +35,13 @@ const MyBag = () => {
           </>
         ) : null}
       </h2>
-      <div style={{ maxHeight: "calc(100vh - 270px)", overflowY: "scroll" }}>
+      <div style={{ maxHeight: "calc(100vh - 17.875rem)", overflowY: "scroll" }}>
         {bagDisplay.map((item) => (
           <div
             key={item.id}
-            className="flex items-center justify-between mb-12 h-52"
+            className="flex items-center mb-12 h-52 space-x-2"
           >
-            <div className="ml-4 flex flex-col h-full justify-between">
+            <div className="ml-4 flex flex-1 flex-col h-full justify-between">
               <div>
                 <h3
                   className="text-md text-lg font-light"
@@ -213,7 +213,7 @@ const MyBag = () => {
         PLACE ORDER
       </button>
     </div>
-  );
+  ) : null;
 };
 
 export default MyBag;

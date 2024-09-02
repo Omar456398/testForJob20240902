@@ -5,8 +5,12 @@ body {
   -moz-osx-font-smoothing: grayscale;
 }
 
+html {
+  font-size: 12px;
+}
+
 code {
-  font-family: source-code-pro, Menlo, Monaco, Consolas, 'Courier New',
+  font-family: source-code-pro, Menlo, Monaco, Consolas, "Courier New",
     monospace;
 }
 
@@ -14,10 +18,10 @@ code {
 @tailwind components;
 @tailwind utilities;
 
-.mt--0\.5{
+.mt--0\.5 {
   margin-top: -0.125em;
 }
-.mt--0\.7{
+.mt--0\.7 {
   margin-top: -0.175em;
 }
 
