@@ -20,7 +20,7 @@ class ProductType extends ObjectType {
                 'id' => Type::string(),
                 'name' => Type::string(),
                 'type' => Type::string(),
-                'inStock' => Type::string(),
+                'inStock' => Type::int(),
                 'description' => Type::string(),
                 'category' => Type::string(),
                 'brand' => Type::string(),

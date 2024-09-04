@@ -42,8 +42,8 @@ function ItemTile({ prod, addToBag }) {
               style={{ left: "-3rem", top: "-1.5rem", paddingLeft: "0.45rem" }}
             >
               <svg
-                width="12"
-                height="12"
+                width="20"
+                height="20"
                 viewBox="0 0 24 22"
                 fill="none"
                 xmlns="http://www.w3.org/2000/svg"
