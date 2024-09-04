@@ -7,7 +7,6 @@ function Items() {
     useContext(Context);
   const cat = catState[catSelectedID];
   const addToBag = useRef((id) => {
-    console.log(id);
     setBagState((prev) => {
       const curr = JSON.parse(JSON.stringify(prev));
       const newItem = {
@@ -18,7 +17,7 @@ function Items() {
       prodState
         .find((item) => item.id === id)
         ?.attributes?.forEach((element) => {
-          newItem.selectedAttributes[element.id] = element.items?.[0]?.id;
+          newItem.selectedAttributes[element.name] = element.items?.[0]?.value;
         });
       const prodExistent = curr.find((item) => {
         let filterBool = item.id === newItem.id;

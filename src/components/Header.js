@@ -1,5 +1,5 @@
-import { useContext, useMemo } from "react";
-import { useLocation, useNavigate } from "react-router-dom";
+import { useContext, useEffect, useMemo } from "react";
+import { Link, useLocation } from "react-router-dom";
 import CartIcon from "./CartIcon";
 import { Context } from "../App";
 import Logo from "./Logo.js";
@@ -17,8 +17,22 @@ const Header = () => {
     () => bagState.reduce((a, b) => a + (b.count || 0), 0),
     [bagState]
   );
-  const navigate = useNavigate();
+
   const location = useLocation();
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  useEffect(
+    () =>
+      setCatSelectedID(
+        Math.max(
+          catState.findIndex(
+            (item) => "/" + item.name.toLowerCase() === location.pathname
+          ),
+          0
+        )
+      ),
+    [location]
+  );
+
   return (
     <>
       {isCartOpen ? (
@@ -32,26 +46,24 @@ const Header = () => {
         <nav className="flex justify-between items-center px-20 bg-white h-16">
           <div className="flex space-x-8">
             {catState.map((item, index) => (
-              <button
+              <Link
                 data-testid={`${
                   index === catSelectedID ? "active-" : ""
                 }category-link`}
-                key={index}
-                onClick={() => {
-                  if (location.pathname !== "/") {
-                    navigate("/");
-                  }
-                  setCatSelectedID(index);
-                }}
-                className={`${
-                  index === catSelectedID
-                    ? "text-green-500 border-b-2 h-16 border-green-500"
-                    : "text-gray-500"
-                } pb-2`}
-                style={{ marginBottom: -3 }}
+                to={"/" + item.name.toLowerCase()}
               >
-                {item.name?.toUpperCase()}
-              </button>
+                <button
+                  key={index}
+                  className={`${
+                    index === catSelectedID
+                      ? "text-green-500 border-b-2 border-green-500"
+                      : "text-gray-500"
+                  } pb-2 h-16`}
+                  style={{ marginBottom: -3 }}
+                >
+                  {item.name?.toUpperCase()}
+                </button>
+              </Link>
             ))}
           </div>
           <CartIcon itemCount={bagCount}></CartIcon>

@@ -2,7 +2,6 @@ import { createElement, Fragment } from "react";
 
 export const htmlToReact = (topElement) => {
   const children = topElement.childNodes;
-  console.log([...children]);
   return [...children].map((child) => {
     if (child.nodeType === Node.ELEMENT_NODE) {
       return createElement(child.tagName, {}, htmlToReact(child));

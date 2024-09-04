@@ -1,4 +1,4 @@
-import { useCallback, useContext, useMemo, useState } from "react";
+import { useCallback, useContext, useEffect, useMemo, useState } from "react";
 import { htmlStringToReact } from "../helper";
 import { Context } from "../App";
 import { useParams } from "react-router-dom";
@@ -8,6 +8,10 @@ function ItemDetails() {
   const { id } = useParams();
   const { prodState, setBagState } = useContext(Context);
   const prod = prodState.find((item) => item.id === id);
+  const prodImages = useMemo(
+    () => prod?.gallery.map((item) => item.url),
+    [prod]
+  );
   const reactHTML = useMemo(
     () => htmlStringToReact(prod?.description || ""),
     [prod]
@@ -21,10 +25,28 @@ function ItemDetails() {
     prodState
       .find((item) => item.id === id)
       ?.attributes?.forEach((element) => {
-        newItem.selectedAttributes[element.id] = null;
+        newItem.selectedAttributes[element.name] = null;
       });
     return newItem;
   });
+  useEffect(() => {
+    if (prod) {
+      setProdObj(() => {
+        const newItem = {
+          id,
+          selectedAttributes: {},
+          count: 1,
+        };
+        prodState
+          .find((item) => item.id === id)
+          ?.attributes?.forEach((element) => {
+            newItem.selectedAttributes[element.name] = null;
+          });
+        return newItem;
+      });
+    }
+  // eslint-disable-next-line react-hooks/exhaustive-deps
+  }, [prod]);
   const isAvailable = useMemo(() => {
     let availBool = prod?.inStock;
     if (availBool) {
@@ -65,11 +87,11 @@ function ItemDetails() {
     [prodObj, setBagState]
   );
   return prod ? (
-    <div className="p-4">
+    <div className="p-4 mx-auto w-fit">
       <div className="flex flex-col md:flex-row">
-        <Gallery images={prod.gallery || []} />
+        <Gallery images={prodImages || []} />
         <div
-          className="ml-4 flex flex-1 flex-col h-full justify-between"
+          className="ml-40 flex flex-1 flex-col h-full justify-between"
           style={{ maxWidth: "24rem" }}
         >
           <div>
@@ -77,24 +99,24 @@ function ItemDetails() {
           </div>
           {prod.attributes.map((attribute) => (
             <div
-              key={attribute.id}
-              data-testid={`product-attribute-${attribute.id?.toLowerCase()}`}
+              key={attribute.name}
+              data-testid={`product-attribute-${attribute.name?.toLowerCase()}`}
             >
-              <label key={attribute.id + "_0"} className="text-lg font-bold">
+              <label key={attribute.name + "_0"} className="text-lg font-bold">
                 {attribute.name?.toUpperCase()}:
               </label>
               <div
-                key={attribute.id + "_1"}
+                key={attribute.name + "_1"}
                 className="flex items-center flex-wrap mt-2 mb-8"
               >
                 {attribute.items.map((item2) => (
                   <button
-                    data-testid={`product-attribute-${attribute.id?.toLowerCase()}-${item2.id?.toLowerCase()}${
+                    data-testid={`product-attribute-${attribute.name?.toLowerCase()}-${item2.value}${
                       attribute.items.find(
                         (item3) =>
-                          item3.id === item2.id &&
-                          item3.id ===
-                            prodObj.selectedAttributes?.[attribute.id]
+                          item3.value === item2.value &&
+                          item3.value ===
+                            prodObj.selectedAttributes?.[attribute.name]
                       )
                         ? "-selected"
                         : ""
@@ -103,21 +125,21 @@ function ItemDetails() {
                       setProdObj((prev) => {
                         let curr = JSON.parse(JSON.stringify(prev));
                         if (curr.selectedAttributes) {
-                          curr.selectedAttributes[attribute.id] = item2.id;
+                          curr.selectedAttributes[attribute.name] = item2.value;
                         }
                         return curr;
                       });
                     }}
-                    key={item2.id}
+                    key={item2.value}
                     className={
                       "pt-0 py-0 mr-4 mb-2 " +
                       (attribute.type === "text"
                         ? `h-12 w-min-16 p-2 ${
                             attribute.items.find(
                               (item3) =>
-                                item3.id === item2.id &&
-                                item3.id ===
-                                  prodObj.selectedAttributes?.[attribute.id]
+                                item3.value === item2.value &&
+                                item3.value ===
+                                  prodObj.selectedAttributes?.[attribute.name]
                             )
                               ? "text-white"
                               : "text-black bg-white"
@@ -138,9 +160,9 @@ function ItemDetails() {
                           "p-0.5 border " +
                           (attribute.items.find(
                             (item3) =>
-                              item3.id === item2.id &&
-                              item3.id ===
-                                prodObj.selectedAttributes?.[attribute.id]
+                              item3.value === item2.value &&
+                              item3.value ===
+                                prodObj.selectedAttributes?.[attribute.name]
                           )
                             ? "border-green-400"
                             : "border-gray-100")

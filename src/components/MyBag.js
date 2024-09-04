@@ -1,8 +1,18 @@
-import { useContext, useMemo } from "react";
+import { useContext, useEffect, useMemo } from "react";
 import { Context } from "../App";
 
 const MyBag = () => {
-  const { bagState, setBagState, prodState, isCartOpen } = useContext(Context);
+  const {
+    bagState,
+    setBagState,
+    prodState,
+    isCartOpen,
+    addOrder,
+    addOrderLoading,
+    addOrderReset,
+    orderCreationError,
+    createdOrderData,
+  } = useContext(Context);
   const bagDisplay = useMemo(
     () =>
       bagState
@@ -25,9 +35,19 @@ const MyBag = () => {
       ),
     [bagDisplay]
   );
+  useEffect(() => {
+    if(createdOrderData) {
+        addOrderReset()
+        setBagState([])
+    } else if(orderCreationError) {
+        alert('Error creating order!')
+        addOrderReset()
+    }
+  }, [createdOrderData, orderCreationError, addOrderReset, setBagState])
   return isCartOpen ? (
     <div
       className="p-4 bg-white w-full max-w-md right-20 fixed top-16"
+      data-testid="cart-overlay"
       style={{ zIndex: 3 }}
     >
       <h2 className="text-lg mb-4">
@@ -63,35 +83,35 @@ const MyBag = () => {
               </div>
               {item.attributes.map((attribute) => (
                 <div
-                  key={attribute.id}
-                  data-testid={`cart-item-attribute-${attribute.id?.toLowerCase()}`}
+                  key={attribute.name}
+                  data-testid={`cart-item-attribute-${attribute.name?.toLowerCase()}`}
                 >
-                  <label key={attribute.id + "_0"} className="text-sm">
+                  <label key={attribute.name + "_0"} className="text-sm">
                     {attribute.name}:
                   </label>
                   <div
-                    key={attribute.id + "_1"}
+                    key={attribute.name + "_1"}
                     className="flex items-center space-x-2"
                   >
                     {attribute.items.map((item2) => (
                       <button
-                        data-testid={`cart-item-attribute-${attribute.id?.toLowerCase()}-${item2.id?.toLowerCase()}${
+                        data-testid={`cart-item-attribute-${attribute.name?.toLowerCase()}-${item2.value}${
                           attribute.items.find(
                             (item3) =>
-                              item3.id === item2.id &&
-                              item3.id ===
-                                item.selectedAttributes?.[attribute.id]
+                              item3.value === item2.value &&
+                              item3.value ===
+                                item.selectedAttributes?.[attribute.name]
                           )
                             ? "-selected"
                             : ""
                         }`}
-                        key={item2.id}
+                        key={item2.value}
                         onClick={() => {
                           setBagState((prev) => {
                             let curr = JSON.parse(JSON.stringify(prev));
                             if (curr[index]?.selectedAttributes) {
-                              curr[index].selectedAttributes[attribute.id] =
-                                item2.id;
+                              curr[index].selectedAttributes[attribute.name] =
+                                item2.value;
                             }
                             return curr;
                           });
@@ -102,9 +122,9 @@ const MyBag = () => {
                             ? `h-7 w-min-7 ${
                                 attribute.items.find(
                                   (item3) =>
-                                    item3.id === item2.id &&
-                                    item3.id ===
-                                      item.selectedAttributes?.[attribute.id]
+                                    item3.value === item2.value &&
+                                    item3.value ===
+                                      item.selectedAttributes?.[attribute.name]
                                 )
                                   ? "text-white"
                                   : "text-black bg-white"
@@ -125,9 +145,9 @@ const MyBag = () => {
                               "p-0.5 border " +
                               (attribute.items.find(
                                 (item3) =>
-                                  item3.id === item2.id &&
-                                  item3.id ===
-                                    item.selectedAttributes?.[attribute.id]
+                                  item3.value === item2.value &&
+                                  item3.value ===
+                                    item.selectedAttributes?.[attribute.name]
                               )
                                 ? "border-green-400"
                                 : "border-gray-100")
@@ -187,7 +207,7 @@ const MyBag = () => {
               </button>
             </div>
             <img
-              src={item.gallery?.[0]}
+              src={item.gallery?.[0]?.url}
               alt={item.name}
               className="w-32 h-52 object-contain rounded"
             />
@@ -202,10 +222,10 @@ const MyBag = () => {
       </div>
       <button
         onClick={() => {
-          setBagState([]);
+            addOrder({variables: {order_json: JSON.stringify(bagState)}})
         }}
         className="w-full mt-4 py-4 bg-green-500 disabled:bg-gray-500 text-white"
-        disabled={bagCount === 0}
+        disabled={bagCount === 0 || addOrderLoading}
       >
         PLACE ORDER
       </button>

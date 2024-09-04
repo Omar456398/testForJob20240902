@@ -66,7 +66,6 @@ const Gallery = ({ images: imagesPre, autoScrollInterval = 3000 }) => {
           return indexRef.current;
         });
         setTimeout(() => {
-          console.log(indexRef.current, imagesPre.length);
           if (indexRef.current === imagesPre.length) {
             setSmooth(false);
             indexRef.current = 0;
@@ -93,13 +92,7 @@ const Gallery = ({ images: imagesPre, autoScrollInterval = 3000 }) => {
     if (trackRef.current) {
       trackRef.current.style.transform = `translateX(${offset}rem)`;
     }
-    onSnap(index);
   };
-
-  const onSnap = (currentIndex) => {
-    console.log("Snapped to image", (currentIndex % imagesPre.length) + 1);
-  };
-
   useEffect(() => {
     moveCarousel();
     // eslint-disable-next-line react-hooks/exhaustive-deps

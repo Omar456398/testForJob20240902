@@ -14,11 +14,11 @@ function ItemTile({ prod, addToBag }) {
     >
       <div className="relative flex flex-row bg-gray-200 mb-2">
         <img
-          src={prod.gallery[0]}
+          src={prod.gallery[0]?.url}
           alt={prod.name}
           className="w-52 h-48 object-contain opacity-90 bg-white"
         />
-        {prod.inStock ? null : (
+        {prod?.inStock ? null : (
           <span className="absolute top-1/2 w-full text-grey-500 text-center">
             OUT OF STOCK
           </span>
@@ -28,7 +28,7 @@ function ItemTile({ prod, addToBag }) {
         <div className="flex flex-col justify-between items-left flex-1">
           <h3 className="text-md font-light">{prod.name}</h3>
           <span className="text-md font-medium">
-            ${(prod.prices[0]?.amount || 0).toFixed(2)}
+            ${(prod?.prices[0]?.amount || 0).toFixed(2)}
           </span>
         </div>
         <div className="w-0 relative self-start">
