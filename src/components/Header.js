@@ -1,4 +1,5 @@
 import { useContext, useMemo } from "react";
+import { useLocation, useNavigate } from "react-router-dom";
 import CartIcon from "./CartIcon";
 import { Context } from "../App";
 import Logo from "./Logo.js";
@@ -16,6 +17,8 @@ const Header = () => {
     () => bagState.reduce((a, b) => a + (b.count || 0), 0),
     [bagState]
   );
+  const navigate = useNavigate();
+  const location = useLocation();
   return (
     <>
       {isCartOpen ? (
@@ -35,6 +38,9 @@ const Header = () => {
                 }category-link`}
                 key={index}
                 onClick={() => {
+                  if (location.pathname !== "/") {
+                    navigate("/");
+                  }
                   setCatSelectedID(index);
                 }}
                 className={`${

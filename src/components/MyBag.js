@@ -26,7 +26,10 @@ const MyBag = () => {
     [bagDisplay]
   );
   return isCartOpen ? (
-    <div className="p-4 bg-white w-full max-w-md right-20 fixed top-16" style={{zIndex: 3}}>
+    <div
+      className="p-4 bg-white w-full max-w-md right-20 fixed top-16"
+      style={{ zIndex: 3 }}
+    >
       <h2 className="text-lg mb-4">
         <span className="font-semibold">My Bag{bagCount ? "," : ""}</span>{" "}
         {bagCount ? (
@@ -35,12 +38,11 @@ const MyBag = () => {
           </>
         ) : null}
       </h2>
-      <div style={{ maxHeight: "calc(100vh - 17.875rem)", overflowY: "scroll" }}>
-        {bagDisplay.map((item) => (
-          <div
-            key={item.id}
-            className="flex items-center mb-12 h-52 space-x-2"
-          >
+      <div
+        style={{ maxHeight: "calc(100vh - 17.875rem)", overflowY: "scroll" }}
+      >
+        {bagDisplay.map((item, index) => (
+          <div key={item.id} className="flex items-center mb-12 h-52 space-x-2">
             <div className="ml-4 flex flex-1 flex-col h-full justify-between">
               <div>
                 <h3
@@ -87,15 +89,10 @@ const MyBag = () => {
                         onClick={() => {
                           setBagState((prev) => {
                             let curr = JSON.parse(JSON.stringify(prev));
-                            if (
-                              curr.find((item2) => item2.id === item.id)
-                                ?.selectedAttributes
-                            ) {
-                              curr.find(
-                                (item2) => item2.id === item.id
-                              ).selectedAttributes[attribute.id] = item2.id;
+                            if (curr[index]?.selectedAttributes) {
+                              curr[index].selectedAttributes[attribute.id] =
+                                item2.id;
                             }
-                            console.log(curr);
                             return curr;
                           });
                         }}
@@ -155,11 +152,11 @@ const MyBag = () => {
                 onClick={() => {
                   setBagState((prev) => {
                     let curr = JSON.parse(JSON.stringify(prev));
-                    if (curr.find((item2) => item2.id === item.id)) {
-                      curr.find((item2) => item2.id === item.id).count--;
+                    if (curr[index]) {
+                      curr[index].count--;
                     }
-                    if (curr.find((item2) => item2.id === item.id).count <= 0) {
-                      curr = curr.filter((item2) => item2.id !== item.id);
+                    if (curr[index].count <= 0) {
+                      curr = curr.filter((_, index2) => index2 !== index);
                     }
                     return curr;
                   });
@@ -178,9 +175,9 @@ const MyBag = () => {
                 className="px-2 py-0 border text-4xl border-black font-light active:bg-gray-300 w-8 h-8"
                 onClick={() => {
                   setBagState((prev) => {
-                    const curr = JSON.parse(JSON.stringify(prev));
-                    if (curr.find((item2) => item2.id === item.id)) {
-                      curr.find((item2) => item2.id === item.id).count++;
+                    let curr = JSON.parse(JSON.stringify(prev));
+                    if (curr[index]) {
+                      curr[index].count++;
                     }
                     return curr;
                   });
@@ -205,7 +202,7 @@ const MyBag = () => {
       </div>
       <button
         onClick={() => {
-            setBagState([])
+          setBagState([]);
         }}
         className="w-full mt-4 py-4 bg-green-500 disabled:bg-gray-500 text-white"
         disabled={bagCount === 0}
